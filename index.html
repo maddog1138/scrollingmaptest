@@ -1,0 +1,61 @@
+<html>
+<head>
+
+<link rel="stylesheet" href="css\scrollingmaptest.css" type="text/css">
+
+<script type="text/javascript" src="js\utility.js"></script>
+<script type="text/javascript" src="js\isiegeajax.js"></script>
+<script type="text/javascript" src="js\viewport.js"></script>
+<script type="text/javascript" src="js\mapobject.js"></script>
+<script type="text/javascript" src="js\mapgridobject.js"></script>
+
+<style type="text/css">
+<!--
+/*margin and padding on body element
+  can introduce errors in determining
+  element position and are not recommended;
+  we turn them off as a foundation for YUI
+  CSS treatments. */
+body {
+  margin:0;
+  padding:0;
+}
+-->
+</style>
+
+
+</head>
+<body>
+<p>
+    Testing map code for web based games.  This test consists of the creation of a viewport on the visible part of the web page.  This viewport will provide 
+    the controls we need to scroll through a map.
+</p>
+<p>v 1.0</p>
+
+<div id="viewport" class="viewport" onmousedown="viewportObj.mouseDownEvent(event);" oncontextmenu="return false;" >
+<div id="mapLoading" class="viewportsplash">L o a d i n g</div>
+<div id="visiblemap" class="visiblemap"></div>
+</div> <!-- viewport -->
+
+<div id="debug" class="debug">
+mouse: X:<input size='5' id='mouseDebugX'/> Y:<input size='5' id='mouseDebugY'/> event:<input size='40' id='mouseDebugEvent'/></br>
+viewport: width:<input size='5' id='viewportDebugX'/>  height:<input size='5' id='viewportDebugY'/> drag:<input size='5' id='viewportDebugDrag'/> </br>
+map: MAX X:<input size='5' id='mapDebugMaxX'/>  MAX Y:<input size='5' id='mapDebugMaxY'/>  visible X:<input size='5' id='mapDebugVisibleX'/> visible Y:<input size='5' id='mapDebugVisibleY'/>
+</div>
+
+<script language="javascript">
+
+
+
+
+viewportObj  = new Viewport();
+viewportObj.initialize(3,3);
+
+
+
+
+
+</script>
+
+</body>
+</html>

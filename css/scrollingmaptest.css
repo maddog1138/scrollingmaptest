@@ -1,0 +1,126 @@
+a {
+ text-decoration:none;
+}
+
+img {border: none}
+ 
+ div.viewport  {
+ visibility:visible;
+ border:2px solid #000;
+ z-index:11;
+ 
+ width:500px;
+ height:500px;
+ position:relative;
+ 
+ overflow:hidden;
+ cursor:move;
+}
+
+.maptable {
+ margin:0px;
+ padding:0px; 
+}
+
+
+div.iemapstyle {
+ z-index: 10;
+ background-color:#ffffff;
+ border:1px dotted #aaaaaa; 
+ 
+ visibility:visible;
+ width:500px;
+ height:500px;
+ position:absolute;
+ top:0px;
+ left:0px;
+}
+
+div.visiblemap {
+ z-index: 10;
+ width:1px;
+ height:1px;
+ position:absolute;
+ overflow:visible;
+}
+
+div.visiblemapbackup {
+ z-index: 10;
+ width:125000px;
+ height:15000px;
+ position:absolute;
+ overflow:visible;
+}
+
+div.viewportsplash {
+ z-index: 20;
+ background-color:#F0E68C;
+ border:2px solid #000000;
+ visibility:visible;
+ position:absolute;
+ font-family:sans-serif;
+ text-align:center;
+ top:45%;
+ left:20%;
+ right:20%;
+}
+
+div.maplayer {
+ z-index: 10;
+ background-color:#6699cc;
+ border:1px dashed #663300; 
+ visibility:visible;
+ width:500px;
+ height:500px;
+ position:absolute;
+ top:0px;
+ left:0px;
+ 
+ font-family:sans-serif;
+ font-size:small;
+ color:#663300;
+ 
+}
+
+img.mapblock {
+ height:100;
+ width:100;
+ margin:0px;
+ padding:0px;
+ 
+}
+
+
+.sampleisland {
+  z-index:9;
+  position:absolute;
+  height:40px;
+  width:40px;
+}
+
+.sampleship {
+  z-index:9;
+  position:absolute;
+  top:70px;
+  left:150px;
+  height:40px;
+  width:40px;
+}
+
+
+.debug {
+ visibility:visible;
+ border:2px solid #000;
+ background:white; 
+ width:500px;
+ font-family:sans-serif;
+ font-size:small;
+ position:absolute;
+ top:50px;
+ left: 570px;
+ overflow:hidden;
+ 
+ cursor:move;
+}
+
+
