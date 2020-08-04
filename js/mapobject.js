@@ -5,20 +5,31 @@
 
 500 x 10 x 5 = 5000 x 5 = 25000
 
+
+methods needed: 
+(1) load map tiles
+(2) unload map tiles
+(3) calculate what are the visible tiles in the given viewport.
+
+
 */
+
 function MapObject() {
 
-  this.MAX_MAP_SIZE_X = 500 * 50;  // 500 px per sea, 50 seas wide.
-  this.MAX_MAP_SIZE_Y = 500 * 50;  // 500 px per sea, 30 seas tall.
+  this.RESOLUTION = 300;
+  this.X_Dimension = 50; // how many tiles wide is the map
+  this.Y_Dimension = 30; // how many tiles tall is the map
+
+  this.MAX_MAP_SIZE_X = this.RESOLUTION * this.X_Dimension;  // 500 px per sea, 50 seas wide.
+  this.MAX_MAP_SIZE_Y = this.RESOLUTION * this.Y_Dimension;  // 500 px per sea, 30 seas tall.
   
-  this.RESOLUTION = 500;
 
   this.origin = null;
   var me = this;
   
   var ajax = null;
   
-  this.MAP = new Array(50);
+  this.MAP = new Array(this.X_Dimension);
   var TILES = new Array();
   var viewport;
 
@@ -42,13 +53,13 @@ inity = initial Y coordinate to centre on
   
     for (i=0;i<50;i++) 
     { 
-      this.MAP[i] = new Array(30);
-      for (j=0; j < 30; j ++)
+      this.MAP[i] = new Array(50);
+      for (j=0; j < 50; j ++)
       {
         this.MAP[i][j] = 0;
       }
     }
-    TILES.push
+    TILES.push;
      
     
     this.updateMap (initx, inity); 
@@ -58,6 +69,7 @@ inity = initial Y coordinate to centre on
   /**
   this is the callback function that is given to the ajax routine for retrieving map tiles.
   */
+
   this.processMapData = function() {
     var httpRequest = me.ajax.getXmlHttp();
     if (httpRequest.readyState == 4) {
@@ -114,8 +126,8 @@ inity = initial Y coordinate to centre on
   this.setVisibleMap = function(newx, newy) {
     if (newx < 0) newx = 0;
     if (newy < 0) newy = 0;
-    if (newx > (this.MAX_MAP_SIZE_X - 500)) newx = this.MAX_MAP_SIZE_X - 500;
-    if (newy > (this.MAX_MAP_SIZE_Y - 500)) newy = this.MAX_MAP_SIZE_Y - 500;
+    if (newx > (this.MAX_MAP_SIZE_X - this.RESOLUTION)) newx = this.MAX_MAP_SIZE_X - this.RESOLUTION;
+    if (newy > (this.MAX_MAP_SIZE_Y - this.RESOLUTION)) newy = this.MAX_MAP_SIZE_Y - this.RESOLUTION;
     
     document.getElementById('visiblemap').style.left = -(newx)+"px";
     document.getElementById('visiblemap').style.top  = -(newy)+"px";
@@ -137,7 +149,7 @@ inity = initial Y coordinate to centre on
   // init function input is the (x,y) coordinate of the sea we're to centre on.
   // take that value and compute the tiles around it, verify if they're loaded or not.
   
-    var cssClass = 'maplayer';
+    let cssClass = 'maplayer';
     if (this.viewport.util.nIE) {  // small fixes for IE presentation
       cssClass = 'iemapstyle';
     }
@@ -161,7 +173,7 @@ inity = initial Y coordinate to centre on
 //        alert("loading map ["+testx + ","+testy+"] (" + this.MAP[testx][testy] + ")");
         
         if (this.MAP[testx][testy] < 1) { // map not loaded yet for this tile.
-          this.viewport.splashLoading(1); 
+//          this.viewport.splashLoading(1); 
           
           serverRequest += "&sea"+request+"="+testx+""+testy;
           this.MAP[testx][testy] = 1;
@@ -175,8 +187,10 @@ inity = initial Y coordinate to centre on
 
           document.getElementById('visiblemap').innerHTML += mapGrid;
 
-          document.getElementById(mapGridId).style.left = testx*500 + 'px';
-          document.getElementById(mapGridId).style.top = testy*500 + 'px';
+          document.getElementById(mapGridId).style.left = testx*this.RESOLUTION + 'px';
+          document.getElementById(mapGridId).style.top = testy*this.RESOLUTION + 'px';
+          document.getElementById(mapGridId).style.width = this.RESOLUTION + 'px';
+          document.getElementById(mapGridId).style.height = this.RESOLUTION + 'px';
         }
       }
     }
@@ -189,7 +203,7 @@ inity = initial Y coordinate to centre on
       //**************************************************************************
       // fire off the request to server to get map data.
       // TODO: server string will need to be dynamic.
-      this.ajax.fireRequest("/cgi-bin/dwlcgi?a=isiegeGetMapData", serverRequest, me.processMapData);
+     // this.ajax.fireRequest("/cgi-bin/dwlcgi?a=isiegeGetMapData", serverRequest, me.processMapData);
     } else {
     }
   

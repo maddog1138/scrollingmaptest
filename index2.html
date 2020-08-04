@@ -1,0 +1,93 @@
+<!doctype html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  	<meta charset="utf-8"/>
+  	<link rel="stylesheet" href="css/tabbedcontainer.css" />
+
+	<link rel="stylesheet" href="css\scrollingmaptest.css" type="text/css">
+
+<script type="text/javascript" src="js\utility.js"></script>
+<script type="text/javascript" src="js\isiegeajax.js"></script>
+<script type="text/javascript" src="js\viewport.js"></script>
+<script type="text/javascript" src="js\mapobject.js"></script>
+<script type="text/javascript" src="js\mapgridobject.js"></script>
+
+
+</head>
+
+<body>
+	<input id="tabs-input-1" type="radio" name="tab-group" checked="checked" />
+	<input id="tabs-input-2" type="radio" name="tab-group" />
+	<input id="tabs-input-3" type="radio" name="tab-group" />
+	<!--the following is the main container for all the components of the tabbed panes-->
+	<div id="tabs-container">
+		<!--container for the interactive tabs-->
+		<div id="tabs-container-tabs">
+			<!--Tab 1 active by default-->
+			<label id="tabs-label-1" for="tabs-input-1">About</label>
+			<!--Tab 2 inactive by default-->
+			<label id="tabs-label-2" for="tabs-input-2">Project</label>
+			<!--Tab 3 inactive by default-->
+      <label id="tabs-label-3" for="tabs-input-3">Debug</label>
+    </div>
+	    <!--container for main content-->
+	  <div id="tabs-content">
+			
+	    	<!--Tab 1 content-->
+	        <div id="tabs-content-1">
+            <p>v 1.0</p>
+            <p>
+              Testing map code for web based games.  This test consists of the creation of a viewport on the visible part of the web page.  This viewport will provide 
+              the controls we need to scroll through a map.
+            </p>
+
+	        </div>
+	        <!--Tab 2 content-->
+	        <div id="tabs-content-2">
+
+            <!--<div id="map_viewport" onmousedown="viewportObj.mouseDownEvent(event);" oncontextmenu="return false;" >-->
+            <div id="map_viewport" oncontextmenu="return false;" >
+                <div id="mapLoading" class="viewportsplash">L o a d i n g</div>
+              <div id="visiblemap" class="visiblemap"></div>
+              </div> <!-- viewport -->
+                      
+	           
+	        </div>
+	        <!--Tab 3 content-->
+	        <div id="tabs-content-3">
+            <div id="debug" class="debug">
+            </div>
+                          
+	           
+	        </div>
+	    </div>
+	</div>
+</body>
+
+<body>
+
+<!--
+
+<div id="debug" class="debug">
+mouse: X:<input size='5' id='mouseDebugX'/> Y:<input size='5' id='mouseDebugY'/> event:<input size='40' id='mouseDebugEvent'/></br>
+viewport: width:<input size='5' id='viewportDebugX'/>  height:<input size='5' id='viewportDebugY'/> drag:<input size='5' id='viewportDebugDrag'/> </br>
+map: MAX X:<input size='5' id='mapDebugMaxX'/>  MAX Y:<input size='5' id='mapDebugMaxY'/>  visible X:<input size='5' id='mapDebugVisibleX'/> visible Y:<input size='5' id='mapDebugVisibleY'/>
+</div>
+
+-->
+<script language="javascript">
+
+
+
+
+viewportObj  = new Viewport();
+viewportObj.initialize(3,3);
+
+
+
+
+
+</script>
+
+</body>
+</html>

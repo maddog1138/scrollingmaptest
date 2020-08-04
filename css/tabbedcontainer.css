@@ -1,0 +1,120 @@
+:root {
+	--tabs-container-height: 95vh; /* 100% of viewport height */
+	--tabs-container-width: auto; /* fill the viewport */
+	--tabs-container-margin: 0.25em;
+
+}
+
+/*
+  set some core defaults for the content on the page.
+*/
+* {
+	font-family: Arial, sans;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box; /* browser will account for border and padding when calculating elemen width & height */
+}
+
+
+/*
+  define the dimensions of the main container.  this container encapsulates all the tabs in this implementation. 
+*/
+#tabs-container {
+	width: var(--tabs-container-width); 
+	min-height: var(--tabs-container-height);
+	margin: var(--tabs-container-margin);
+	display:grid;
+	grid-template-rows:2.5em auto;
+}
+
+
+input#tabs-input-1,
+input#tabs-input-2,
+input#tabs-input-3 {
+	display:none;
+	z-index: -100;
+}
+
+label#tabs-label-1,
+label#tabs-label-2,
+label#tabs-label-3 {
+	background: linear-gradient( #ffe0b8, #b38a55);  
+	border-radius: .50em .50em 0 0;
+	color: #444444;  
+    cursor: pointer;
+	display: block;
+	float: left;
+	font-size: 1em;  
+	height: 2.5em;
+	line-height: 2.5em;
+	margin-right: .25em;
+	padding: 0 1.5em;
+	text-align: center;
+}
+
+label#tabs-label-1:hover,
+label#tabs-label-2:hover,
+label#tabs-label-3:hover {
+    background: linear-gradient( #ffe7ca, #c29964);  
+	color: #252525;  
+}
+
+ input#tabs-input-1:checked ~ #tabs-container label#tabs-label-1,
+ input#tabs-input-2:checked ~ #tabs-container label#tabs-label-2,
+ input#tabs-input-3:checked ~ #tabs-container label#tabs-label-3 {
+	background: linear-gradient( #ffeed8, #ffe0b8);  
+    color: rgb(0, 0, 0); 
+	position: relative;
+	z-index: 10;
+	filter: blur(0px);
+}
+
+#tabs-content {
+	background: #ffe0b8;  
+	border-radius: 0 .25em .25em .25em;
+
+
+	position: relative;
+	width: 100%;
+	z-index: 5;
+}
+
+div#tabs-content-1,
+div#tabs-content-2,
+div#tabs-content-3 {
+	opacity: 0;
+	padding: 1.5em;
+	position: absolute;
+	z-index: -100;
+
+	transition: all 0.1s ease-out;
+}
+
+#tabs-content p {
+	margin-bottom: 1em;
+}
+
+#tabs-content p.last {
+	margin-bottom: 0;
+}
+
+#tabs-content p.column-left {
+	float:left;
+	width:48%;
+}
+
+
+/*
+in the following, we are using the general sibling combinator to match content elements.  
+The flow should be as follows:  select #tabs-content-1 within #tabs-content as long as it's sibling input#tabs-input-1 within #tabs-container is checked.
+*/
+input#tabs-input-1:checked ~ #tabs-container #tabs-content-1,
+input#tabs-input-2:checked ~ #tabs-container #tabs-content-2,
+input#tabs-input-3:checked ~ #tabs-container #tabs-content-3 {
+    opacity: 1;
+    z-index: 100;
+}
+
+input.visible {
+  visibility: visible !important;
+}

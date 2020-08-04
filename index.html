@@ -1,5 +1,7 @@
 <!doctype html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8"/>
 
 <link rel="stylesheet" href="css\scrollingmaptest.css" type="text/css">
 
@@ -32,9 +34,9 @@ body {
 </p>
 <p>v 1.0</p>
 
-<div id="viewport" class="viewport" onmousedown="viewportObj.mouseDownEvent(event);" oncontextmenu="return false;" >
-<div id="mapLoading" class="viewportsplash">L o a d i n g</div>
-<div id="visiblemap" class="visiblemap"></div>
+<div id="map_viewport" class="map_viewport" onmousedown="viewportObj.mouseDownEvent(event);" oncontextmenu="return false;" >
+  <div id="mapLoading" class="viewportsplash">L o a d i n g</div>
+  <div id="visiblemap" class="visiblemap"></div>
 </div> <!-- viewport -->
 
 <div id="debug" class="debug">
@@ -48,10 +50,10 @@ map: MAX X:<input size='5' id='mapDebugMaxX'/>  MAX Y:<input size='5' id='mapDeb
 
 
 
-viewportObj  = new Viewport();
-viewportObj.initialize(3,3);
+/* viewportObj  = new Viewport();
+viewportObj.initialize(3,3); */
 
-
+viewportObj = new GameMapViewport(3,3);
 
 
 

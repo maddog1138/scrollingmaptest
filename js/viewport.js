@@ -1,98 +1,99 @@
 /*
-object Viewport - a container for the MapObject.
-                - the viewport controls properties such as viewport size on screen.
-                - the viewport has methods for mouse events.
-                - the viewport exists within the confines of it's parent html element.
+Viewport object. 
+
+The intent of the viewport object is to become a window into the game world. The Viewport 
+object is mapped directly to a DOM object which becomes its host container.  
+The Viewport has the following properties:
+- size in pixels on the device, inherited from the containing DOM object.
+- the Viewport can react to containing DOM object resizing. 
+- the Viewport intercepts mouse and touch events and translates them to game events.
+
+                
 */
-function Viewport() {
-  var MAX_X = 500;
-  var MAX_Y = 500;
-  
-  var viewportDiv = null;
-  var isDragOn = false;
-  var util     = null;
-  var oldXY  = null;
-  var dragXY   = null;
-  var offsetXY = null;
-  
-  var mapObject = null;
+
+class GameMapViewport{
+
+
+
+  // constructor parameters:
+  // {initx, inity} these are the IN GAME coordinates that the viewport should center on.
+  constructor(initx, inity){
+    console.info(`"Start of GameMapViewport constructor with inputs: (${initx},${inity}).`);
+
+    this.splashLoading(true);
+
+    let isDragOn = false;
+
+    this.viewportDiv = document.querySelector('#map_viewport');
+
+    this.util = new GameUtility();
   
 
-  
-  var initialized = false;
-
-  /*
-  initialize() - initialize function for viewport object.
-  input (x,y), Map coordinate that the viewport is to display.  Right now this map coordinate is placed in left top corner of viewport.
-  
-  */
-  this.initialize = function(initx, inity) {
-
-    this.splashLoading(1);
-
-    this.viewportDiv = document.getElementById('viewport');
-    this.util = new Util();
-    this.util.initialize();
+    // at this point we ask the map to load content.  
     this.mapObject = new MapObject();
+
     this.mapObject.initialize(this, initx, inity);
 
-    document.onmouseup=function(){viewportObj.mouseUpEvent();};
-    document.onmousemove=function(event){viewportObj.mouseMoveEvent(event);};
+    this.viewportDiv.addEventListener('mousedown', e => this.mouseDownEvent(e));
+    this.viewportDiv.addEventListener('mouseup', e => this.mouseUpEvent(e));
+    this.viewportDiv.addEventListener('mousemove', e => this.mouseMoveEvent(e));
+    this.viewportDiv.addEventListener('mouseout', e => this.mouseOutEvent(e));
+
+
+    // document.onmouseup=function(){viewportObj.mouseUpEvent();};
+    // document.onmousemove=function(event){viewportObj.mouseMoveEvent(event);};
 
     this.initialized = true;
-    this.splashLoading(0);
+    this.splashLoading(false);    
+
   }
 
 
-  /*
-    registered method for the mouse down event with the viewport. Do the following:
+  splashLoading(toggle) {
+    if (toggle) document.getElementById('mapLoading').style.visibility = 'visible';
+    else document.getElementById('mapLoading').style.visibility = 'hidden';
+  }
+
+  /*-------------------------------------------------------------------------------------
+  mouseDownEvent(e)
+    registered method for the mouse down event with the viewport. Does the following:
     1. capture current mouse coordinates (to be used for calculating drag)
     2. turn drag ON.
-  */
-  this.mouseDownEvent = function(e) {
+
+  -------------------------------------------------------------------------------------*/
+  mouseDownEvent(e) {
     e = e || window.event; 
     
     if (this.util.nNS){ 
       e.preventDefault(); // help stop drag of images off map.
     }
     
+    console.info("registered mouse down event");
+
     if (!this.util.isLeftButton(e)) return false;
     
     this.oldXY = this.util.mouseXYCoord(e);
     this.isDragOn = true;
-  }
-  
-  
-  /**
-  --------------------------------------------------------------------------------------
-  
-  --------------------------------------------------------------------------------------
-  */
-  this.loadMap = function(e) {
-    e = e|| window.event;
-    if (this.util.nNS) {
-      e.preventDefault();
-    }
-//    this.splashLoading(1); 
+  }  
 
-    
-    var tile = e.target;
-    var tileid = tile.id;
-    var x = tileid.substring(1, tileid.indexOf(','));
-    var y = tileid.substring((1 + tileid.indexOf(',')),tileid.indexOf(']'));
-    this.mapObject.updateMap(x,y);
-  }
-  
-  
   /*-------------------------------------------------------------------------------------
   -------------------------------------------------------------------------------------*/
-  this.mouseUpEvent = function() {
+  mouseUpEvent(e) {
     this.isDragOn = false;
+    console.info("registered mouse up event");
   }
+
+  /*-------------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------------*/
+  mouseOutEvent(e) {
+    this.isDragOn = false;
+    console.info("registered mouse out event");
+  }
+
   
   /*-------------------------------------------------------------------------------------
   -------------------------------------------------------------------------------------*/
-  this.mouseMoveEvent = function(e) {
+  mouseMoveEvent(e) {
     if (!this.isDragOn) return;
     e = e || window.event; 
     
@@ -105,11 +106,26 @@ function Viewport() {
     this.mapObject.moveMap(this.oldXY, this.dragXY);
     this.oldXY = this.util.mouseXYCoord(e);
   }
-  
 
-  this.splashLoading = function(toggle) {
-    if (toggle !=0) document.getElementById('mapLoading').style.visibility = 'visible';
-    else document.getElementById('mapLoading').style.visibility = 'hidden';
+
+  /**
+  --------------------------------------------------------------------------------------
+  
+  --------------------------------------------------------------------------------------
+  */
+  loadMap(e) {
+    e = e|| window.event;
+    if (this.util.nNS) {
+      e.preventDefault();
+    }
+  
+    let tile = e.target;
+    let tileid = tile.id;
+    console.info(`loadMap function tile id: ${tileid}`);
+    let x = tileid.substring(1, tileid.indexOf(','));
+    let y = tileid.substring((1 + tileid.indexOf(',')),tileid.indexOf(']'));
+    this.mapObject.updateMap(x,y);
   }
+  
 
 }
