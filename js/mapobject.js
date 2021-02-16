@@ -14,63 +14,62 @@ methods needed:
 
 */
 
-function MapObject() {
+class GameMap {
 
-  this.RESOLUTION = 300;
-  this.X_Dimension = 50; // how many tiles wide is the map
-  this.Y_Dimension = 30; // how many tiles tall is the map
+  constructor(initx, inity){
+    console.info(`GameMap constructor start`);
 
-  this.MAX_MAP_SIZE_X = this.RESOLUTION * this.X_Dimension;  // 500 px per sea, 50 seas wide.
-  this.MAX_MAP_SIZE_Y = this.RESOLUTION * this.Y_Dimension;  // 500 px per sea, 30 seas tall.
-  
+    try {
 
-  this.origin = null;
-  var me = this;
-  
-  var ajax = null;
-  
-  this.MAP = new Array(this.X_Dimension);
-  var TILES = new Array();
-  var viewport;
-
-
-  
-/*
-initialize() function of MapObject.
-This function essentially prepares the map tray for display.
-input:
-p = pointer to parent object (viewport)
-initx = initial X coordinate to centre on.
-inity = initial Y coordinate to centre on
-
-*/
-  this.initialize = function(p, initx, inity){
+      this.RESOLUTION = 300; // resolution in pixels for each map tile
+      this.X_Dimension = 50; // how many tiles wide is the map
+      this.Y_Dimension = 30; // how many tiles tall is the map
     
-  
-  
-    this.viewport = p;
-    this.ajax = new IsiegeAjax();
-  
-    for (i=0;i<50;i++) 
-    { 
-      this.MAP[i] = new Array(50);
-      for (j=0; j < 50; j ++)
-      {
-        this.MAP[i][j] = 0;
+      this.MAX_MAP_SIZE_X = this.RESOLUTION * this.X_Dimension;  // 500 px per sea, 50 seas wide.
+      this.MAX_MAP_SIZE_Y = this.RESOLUTION * this.Y_Dimension;  // 500 px per sea, 30 seas tall.
+
+      this.MAP = new Array(this.X_Dimension);
+      var TILES = new Array();      
+
+      this.coorinateSystem = new MapCoordinateSystem();
+    
+      this.ajax = new IsiegeAjax();
+    
+      for (let x = 0; x < this.X_Dimension; x++) 
+      { 
+        this.MAP[x] = new Array(this.Y_Dimension);
+        for (let y=0; y < this.Y_Dimension; y ++)
+        {
+          this.MAP[x][y] = 0;
+        }
       }
-    }
-    TILES.push;
-     
-    
-    this.updateMap (initx, inity); 
-    this.setVisibleMapX(initx, inity);
+
+      
+      //
+      // TODO: map needs to have a method to figure out what are the visible tiles.  
+
+      this.updateMap (initx, inity); 
+      this.setVisibleMapX(initx, inity);
+
+      console.info(`GameMap constructor end successfully`);
+    } catch (err){
+      console.error(`GameMap constructor caught error: ${err}`);
+    } finally {
+    }   
+
   }
-  
+
+
+  listenerViewportResize(){
+    console.info(`map has received viewport resize event`);
+
+  }  
+
   /**
   this is the callback function that is given to the ajax routine for retrieving map tiles.
   */
 
-  this.processMapData = function() {
+  processMapData() {
     var httpRequest = me.ajax.getXmlHttp();
     if (httpRequest.readyState == 4) {
       if (httpRequest.status == 200) {
@@ -84,7 +83,7 @@ inity = initial Y coordinate to centre on
           var seanamex = parseInt(sea[s].attributes.getNamedItem('x').nodeValue); 
           var seanamey = parseInt(sea[s].attributes.getNamedItem('y').nodeValue);
           if (me.MAP[seanamex][seanamey]==1) { 
-//            alert("Loading ["+seanamex + ","+seanamey+"] (" + me.MAP[seanamex][seanamey] + ")");
+  //            alert("Loading ["+seanamex + ","+seanamey+"] (" + me.MAP[seanamex][seanamey] + ")");
             for (i=0; i<islands.length; i++){
               var iname = islands[i].attributes.getNamedItem("name").nodeValue;
               var ix = parseInt(islands[i].attributes.getNamedItem("x").nodeValue);
@@ -98,23 +97,24 @@ inity = initial Y coordinate to centre on
             var seaname = "["+seanamex+","+seanamey+"]";
             document.getElementById(seaname).innerHTML += txt;
             me.MAP[seanamex][seanamey]=2;
-//            alert("Loaded ["+seanamex + ","+seanamey+"] (" + me.MAP[seanamex][seanamey] + ")");
+  //            alert("Loaded ["+seanamex + ","+seanamey+"] (" + me.MAP[seanamex][seanamey] + ")");
             
           }
         }
       }
       me.viewport.splashLoading(0);     
     }
-  }
-  
-  
-  this.moveMap = function(oldXY, dragXY){
+  }  
 
-    var ox = parseInt(document.getElementById('visiblemap').style.left);
-    var oy = parseInt(document.getElementById('visiblemap').style.top);
 
-    var newx = -(ox + dragXY.x - oldXY.x);
-    var newy = -(oy + dragXY.y - oldXY.y);
+  moveMap(oldXY, dragXY){
+    console.debug(`attempting to move map coord to (${oldXY.x},${oldXY.y})`);    
+
+    let ox = parseInt(document.getElementById('visiblemap').style.left);
+    let oy = parseInt(document.getElementById('visiblemap').style.top);
+
+    let newx = -(ox + dragXY.x - oldXY.x);
+    let newy = -(oy + dragXY.y - oldXY.y);
 
     this.setVisibleMap(newx, newy);
   }
@@ -123,17 +123,20 @@ inity = initial Y coordinate to centre on
   /**
   
   */
-  this.setVisibleMap = function(newx, newy) {
+  setVisibleMap(newx, newy) {
     if (newx < 0) newx = 0;
     if (newy < 0) newy = 0;
     if (newx > (this.MAX_MAP_SIZE_X - this.RESOLUTION)) newx = this.MAX_MAP_SIZE_X - this.RESOLUTION;
     if (newy > (this.MAX_MAP_SIZE_Y - this.RESOLUTION)) newy = this.MAX_MAP_SIZE_Y - this.RESOLUTION;
-    
+
+    console.debug(`attempting to set map coord to (${newx},${newy})`);
+
     document.getElementById('visiblemap').style.left = -(newx)+"px";
     document.getElementById('visiblemap').style.top  = -(newy)+"px";
   }
+
   
-  this.setVisibleMapX = function(newx, newy) {
+  setVisibleMapX(newx, newy) {
     newx = newx * this.RESOLUTION;
     newy = newy * this.RESOLUTION;
     this.setVisibleMap(newx, newy) 
@@ -141,18 +144,18 @@ inity = initial Y coordinate to centre on
   
   
   /*
+  updateMap - this function will request map data from server.  
+
+
   the input mapx, mapy values correspond to the x,y coordinates of the sea to centre the view on.
   */
-  this.updateMap = function(mapx, mapy){
+  updateMap(mapx, mapy){
     
   // load up the tiles we're centering on.
   // init function input is the (x,y) coordinate of the sea we're to centre on.
   // take that value and compute the tiles around it, verify if they're loaded or not.
   
     let cssClass = 'maplayer';
-    if (this.viewport.util.nIE) {  // small fixes for IE presentation
-      cssClass = 'iemapstyle';
-    }
     
     
     mapx = mapx -1;
@@ -163,10 +166,10 @@ inity = initial Y coordinate to centre on
     var request = 1;
   
   // test if the tiles need to be loaded.
-    for (x=0; x<3; x++)
+    for (let x=0; x<3; x++)
     {
       var testx = mapx+x;
-      for(y=0; y<3; y++)
+      for(let y=0; y<3; y++)
       {
         var testy = mapy+y;
         
@@ -205,9 +208,10 @@ inity = initial Y coordinate to centre on
       // TODO: server string will need to be dynamic.
      // this.ajax.fireRequest("/cgi-bin/dwlcgi?a=isiegeGetMapData", serverRequest, me.processMapData);
     } else {
+
     }
-  
-    
-  }
+
+  }  
 
 }
+

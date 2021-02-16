@@ -6,22 +6,60 @@
 
 a {text-decoration:none}        /* candidate for global styles */
 img {border: none}              /* candidate for global styles */
- 
- div#map_viewport  {
- visibility:visible;
- border:2px solid #000;
- z-index:11;
- 
- width:800px;
- height:800px;
- min-height: 100%;
- position:relative;
- top:0;
- left:0;
- 
- overflow:hidden;
- cursor:move;
+
+
+/* responsive design styles*/
+* {
+  box-sizing: border-box;
+  margin: 0px 0px;
+  padding: 0px 0px;
+  font-family: Lucida Console, Courier, monospace;
 }
+
+
+div#parentContainer{
+  display:flex;
+  flex-direction: column;
+  background-color: #e4b73d;
+  border: none;
+  height: 100vh;
+  width: 100vw;
+}
+
+div#introductionContainer{
+  background-color: #a4ff92;
+  flex-basis:2em;
+}
+
+
+div#mapViewportContainer{
+  background-color: #96d1f3;
+  flex: 1;  
+}
+
+div#debugViewportContainer{
+  flex-basis:2em;
+}
+
+
+div#map_viewport  {
+
+}
+
+div.map_viewport {
+  visibility:visible;
+  border:2px solid #000;
+  z-index:11;
+  
+  min-height: 100%;
+  position:relative;
+  top:0;
+  left:0;
+  
+  overflow:hidden;
+  cursor:move;
+}
+
 
 .maptable {
  margin:0px;
@@ -113,18 +151,17 @@ img.mapblock {
 
 
 .debug {
- visibility:visible;
- border:2px solid #000;
- background:white; 
- width:500px;
- font-family:sans-serif;
- font-size:small;
- position:relative;
- top:50px;
- left: 570px;
- overflow:hidden;
+  display:flex;
+  visibility:visible;
+  border:2px solid #000;
+  background:white; 
+  font-family:sans-serif;
+  font-size:small;
+  position:relative;
  
- cursor:move;
+  overflow:hidden;
+ 
+  cursor:move;
 }
 
 
