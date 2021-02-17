@@ -1,3 +1,24 @@
+/*############################################################################
+
+    Copyright 2021 Mike Mytkowski
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+############################################################################*/
+
+
+
 /*
   MapObject.js - this component contains the code needed to manage a map widget in the browser.
                - this component lives within the Viewport container.
@@ -12,6 +33,8 @@ methods needed:
 (3) calculate what are the visible tiles in the given viewport.
 
 
+
+
 */
 
 class GameMap {
@@ -22,8 +45,8 @@ class GameMap {
     try {
 
       this.RESOLUTION = 300; // resolution in pixels for each map tile
-      this.X_Dimension = 50; // how many tiles wide is the map
-      this.Y_Dimension = 30; // how many tiles tall is the map
+      this.X_Dimension = 360; // how many tiles wide is the map
+      this.Y_Dimension = 180; // how many tiles tall is the map
     
       this.MAX_MAP_SIZE_X = this.RESOLUTION * this.X_Dimension;  // 500 px per sea, 50 seas wide.
       this.MAX_MAP_SIZE_Y = this.RESOLUTION * this.Y_Dimension;  // 500 px per sea, 30 seas tall.
@@ -145,8 +168,6 @@ class GameMap {
   
   /*
   updateMap - this function will request map data from server.  
-
-
   the input mapx, mapy values correspond to the x,y coordinates of the sea to centre the view on.
   */
   updateMap(mapx, mapy){

@@ -111,7 +111,9 @@ div.viewportsplash {
 
 div.maplayer {
  z-index: 10;
- background-color:#6699cc;
+ z_background-color:#6699cc;
+ background-image:url(/img/uiHexGrid.svg);
+ background-size:50px;
  border:1px dashed #663300; 
  visibility:visible;
  position:absolute;
