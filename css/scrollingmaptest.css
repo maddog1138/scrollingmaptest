@@ -114,7 +114,10 @@ div.maplayer {
  z_background-color:#6699cc;
  background-image:url(../img/uiHexGrid.svg);
  background-size:50px;
- border:1px dashed #663300; 
+ background-position:-37px -28px;
+ background-repeat:repeat;
+ border: dashed #663300; 
+ border-width: 1px 0px 0px 1px;
  visibility:visible;
  position:absolute;
  top:0px;

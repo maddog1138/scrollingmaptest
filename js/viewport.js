@@ -70,18 +70,12 @@ class GameMapViewport{
       this.viewportDiv.addEventListener('touchend', e => this.mouseUpEvent(e));
       this.viewportDiv.addEventListener('touchcancel', e => this.mouseOutEvent(e));
 
-
-      //TODO: add in events for touch 
-
-
-      //TODO: add in events for viewport resize
-      // when the browser window is resized, we add an event listener that will trigger the helper method
-      // viewportDimensions();
+      // add event listener for window resize.  Launch helper mehod viewportDimensions
       window.addEventListener('resize', e => this.viewportDimensions(e));
  
 
       // at this point we ask the map to load content.  
-      this.mapObject = new GameMap( initx, inity);
+      this.mapObject = new GameMap( initx, inity, this.width, this.height);
       //this.mapObject.initialize(this, initx, inity);
 
       //this.viewportDiv.addEventListener("resizeViewportEvent", this.mapObject.listenerViewportResize(),false);
@@ -101,14 +95,15 @@ class GameMapViewport{
   }
 
 
-  // helper method for capturing size of viewport.
+  // helper method for capturing size of viewport and dispatching a custom event for other UI components to react to the viewport resizing.
   viewportDimensions(){
 
     //TODO: Document why a synthetic resize viewport event is triggered here.  
-    this.viewportDiv.dispatchEvent(new Event('resizeViewportEvent'));
     
     this.width = this.viewportDiv.clientWidth;
     this.height = this.viewportDiv.clientHeight;
+
+    this.viewportDiv.dispatchEvent(new CustomEvent('gameViewportResize', { detail : {width:this.width, height:this.height }}));
 
 
     this.showDebugInfo();
@@ -137,7 +132,7 @@ class GameMapViewport{
 
   -------------------------------------------------------------------------------------*/
   mouseDownEvent(e) {
-    console.info(`registered ${e.type} event`);
+    console.info(`detected ${e.type} event`);
     e = e || window.event; 
     
     if (this.util.nNS){ 
@@ -154,14 +149,14 @@ class GameMapViewport{
   /*-------------------------------------------------------------------------------------
   -------------------------------------------------------------------------------------*/
   mouseUpEvent(e) {
-    console.info(`registered ${e.type} event`);
+    console.info(`detected ${e.type} event`);
     this.isDragOn = false;
   }
 
   /*-------------------------------------------------------------------------------------
   -------------------------------------------------------------------------------------*/
   mouseOutEvent(e) {
-    console.info(`registered ${e.type} event`);
+    console.info(`detected ${e.type} event`);
     this.isDragOn = false;
   }
 
@@ -169,7 +164,7 @@ class GameMapViewport{
   /*-------------------------------------------------------------------------------------
   -------------------------------------------------------------------------------------*/
   mouseMoveEvent(e) {
-    console.info(`registered ${e.type} event`);
+    console.info(`detected ${e.type} event`);
 
     if (!this.isDragOn) return;
 
@@ -188,7 +183,7 @@ class GameMapViewport{
 
   /**
   --------------------------------------------------------------------------------------
-  
+  this is a potentially dead function, it may need to be moved over to the map object.
   --------------------------------------------------------------------------------------
   */
   loadMap(e) {

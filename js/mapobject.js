@@ -44,12 +44,21 @@ class GameMap {
 
     try {
 
-      this.RESOLUTION = 300; // resolution in pixels for each map tile
+      this.RESOLUTION = 500; // resolution in pixels for each map tile
+      this.X_RESOLUTION = 500; // resolution in pixels for each map tile
+      this.Y_RESOLUTION = 433; // resolution in pixels for each map tile
       this.X_Dimension = 360; // how many tiles wide is the map
       this.Y_Dimension = 180; // how many tiles tall is the map
     
-      this.MAX_MAP_SIZE_X = this.RESOLUTION * this.X_Dimension;  // 500 px per sea, 50 seas wide.
-      this.MAX_MAP_SIZE_Y = this.RESOLUTION * this.Y_Dimension;  // 500 px per sea, 30 seas tall.
+      this.MAX_MAP_SIZE_X = this.X_RESOLUTION * this.X_Dimension;  // 500 px per sea 
+      this.MAX_MAP_SIZE_Y = this.Y_RESOLUTION * this.Y_Dimension;  // 500 px per sea
+
+      // TODO: need to figure out the correct sequence of where this belongs.
+      this.map_div = document.querySelector('#visiblemap');      
+
+      this.map_div.addEventListener('gameViewportResize', e => { console.log(`Resize event reports viewport is now (${e.detail.width},${e.detail.height})`), true});
+
+
 
       this.MAP = new Array(this.X_Dimension);
       var TILES = new Array();      
@@ -58,6 +67,7 @@ class GameMap {
     
       this.ajax = new IsiegeAjax();
     
+      // TODO: investigate why this loop initializes the whole array to zero.
       for (let x = 0; x < this.X_Dimension; x++) 
       { 
         this.MAP[x] = new Array(this.Y_Dimension);
@@ -149,8 +159,8 @@ class GameMap {
   setVisibleMap(newx, newy) {
     if (newx < 0) newx = 0;
     if (newy < 0) newy = 0;
-    if (newx > (this.MAX_MAP_SIZE_X - this.RESOLUTION)) newx = this.MAX_MAP_SIZE_X - this.RESOLUTION;
-    if (newy > (this.MAX_MAP_SIZE_Y - this.RESOLUTION)) newy = this.MAX_MAP_SIZE_Y - this.RESOLUTION;
+    if (newx > (this.MAX_MAP_SIZE_X - this.X_RESOLUTION)) newx = this.MAX_MAP_SIZE_X - this.X_RESOLUTION;
+    if (newy > (this.MAX_MAP_SIZE_Y - this.Y_RESOLUTION)) newy = this.MAX_MAP_SIZE_Y - this.Y_RESOLUTION;
 
     console.debug(`attempting to set map coord to (${newx},${newy})`);
 
@@ -160,8 +170,8 @@ class GameMap {
 
   
   setVisibleMapX(newx, newy) {
-    newx = newx * this.RESOLUTION;
-    newy = newy * this.RESOLUTION;
+    newx = newx * this.X_RESOLUTION;
+    newy = newy * this.Y_RESOLUTION;
     this.setVisibleMap(newx, newy) 
   }
   
@@ -211,10 +221,10 @@ class GameMap {
 
           document.getElementById('visiblemap').innerHTML += mapGrid;
 
-          document.getElementById(mapGridId).style.left = testx*this.RESOLUTION + 'px';
-          document.getElementById(mapGridId).style.top = testy*this.RESOLUTION + 'px';
-          document.getElementById(mapGridId).style.width = this.RESOLUTION + 'px';
-          document.getElementById(mapGridId).style.height = this.RESOLUTION + 'px';
+          document.getElementById(mapGridId).style.left = testx*this.X_RESOLUTION + 'px';
+          document.getElementById(mapGridId).style.top = testy*this.Y_RESOLUTION + 'px';
+          document.getElementById(mapGridId).style.width = this.X_RESOLUTION + 'px';
+          document.getElementById(mapGridId).style.height = this.Y_RESOLUTION + 'px';
         }
       }
     }
