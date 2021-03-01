@@ -28,19 +28,19 @@ class GameUtility {
   detectUseragent(){
 
     return parseInt(navigator.appVersion);
-
   }
 
-  mouseXYCoord (e){
-
+  getClientWindowXY (e){
     if (e.type == "touchmove"){
+      console.info(`Touch event, movement point: (${e.changedTouches[0].pageX},${e.changedTouches[0].pageY}).`);
       return {x:e.changedTouches[0].pageX,y:e.changedTouches[0].pageY};
     }
 
     if ( e.pageX ) {
-      console.info('XYcoord calculation: found pageX');
+      console.info(`Mouse event, movemement point: (${e.pageX},${e.pageY}). `);
       return {x:e.pageX, y:e.pageY};
     }
+
     console.info('XYcoord calculation: calculating the old way');
     return {
       x : e.clientX + document.body.scrollLeft - document.body.clientLeft,
@@ -54,3 +54,5 @@ class GameUtility {
   }  
 
 }
+
+export {GameUtility};

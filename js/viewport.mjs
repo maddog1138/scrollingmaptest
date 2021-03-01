@@ -18,9 +18,20 @@ When the viewport object is created, it needs to do the following:
 (3) register mouse/touch events
 (4) instantiate map? 
 
+
+===============================================================================================
+GameMapViewport:
+This object is the container for the visual representation of the world map.  
+
+Event listeners: 
+mouse events for movement and clicks.
+touch events for movement and touches;
                 
+
 */
 
+import {GameMap} from './mapobject.mjs';
+import {GameUtility} from './utility.js';
 
 
 class GameMapViewport{
@@ -32,53 +43,49 @@ class GameMapViewport{
   // TODO: work on input parameters.  Work on interactive UI controls. 
   // TODO: change the constructor inputs to reflect the true coordinate that should be in the middle of the viewport.  
   //       the coordinate needs to be passed to the map, and the map needs to figure out how to allign the tiles. 
-  constructor(initx, inity){
+  constructor(initialCoord){
     console.time("Viewport constructor");
     
-    console.info(`Start of GameMapViewport constructor with inputs: (${initx},${inity}).`);
+    console.info(`Start of GameMapViewport constructor with inputs: (${initialCoord.x},${initialCoord.y}).`);
     this.isDragOn = false;
     this.initialized = false;
-    this.width = 0;
-    this.height = 0;
     
     
     try {
       
       this.splashLoading(true);
 
+      this.util = new GameUtility();
+
+
+      this.__divMapViewport = document.querySelector('#mapViewport');
+
+      // add event listener for window resize.  Launch helper mehod viewportDimensions
+      window.addEventListener('resize', e => this.viewportDimensions(e));
+
 
 
       // get reference to DOM viewport object and get the dimensions
-      this.viewportDiv = document.querySelector('#map_viewport');
+      //const viewportDiv = document.querySelector('#map_viewport');
       this.viewportDimensions();
   
       console.info(`viewport width. ${this.width}, ${this.height}`);
 
       
-      this.util = new GameUtility();
     
   
 
-      //the following are mouse events for movement of map
-      this.viewportDiv.addEventListener('mousedown', e => this.mouseDownEvent(e));
-      this.viewportDiv.addEventListener('mouseup', e => this.mouseUpEvent(e));
-      this.viewportDiv.addEventListener('mousemove', e => this.mouseMoveEvent(e));
-      this.viewportDiv.addEventListener('mouseout', e => this.mouseOutEvent(e));
+      this.addMouseEvents();
 
-      this.viewportDiv.addEventListener('touchstart', e => this.mouseDownEvent(e));
-      this.viewportDiv.addEventListener('touchmove',e => this.mouseMoveEvent(e));
-      this.viewportDiv.addEventListener('touchend', e => this.mouseUpEvent(e));
-      this.viewportDiv.addEventListener('touchcancel', e => this.mouseOutEvent(e));
+      this.addTouchEvents();
 
-      // add event listener for window resize.  Launch helper mehod viewportDimensions
-      window.addEventListener('resize', e => this.viewportDimensions(e));
  
 
       // at this point we ask the map to load content.  
-      this.mapObject = new GameMap( initx, inity, this.width, this.height);
+      this.gameMap = new GameMap( initialCoord);
       //this.mapObject.initialize(this, initx, inity);
 
-      //this.viewportDiv.addEventListener("resizeViewportEvent", this.mapObject.listenerViewportResize(),false);
+      
 
   
       this.initialized = true;
@@ -94,19 +101,52 @@ class GameMapViewport{
 
   }
 
+  addTouchEvents() {
+    this.__divMapViewport.addEventListener('touchstart', e => this.mouseDownEvent(e));
+    this.__divMapViewport.addEventListener('touchmove', e => this.mouseMoveEvent(e));
+    this.__divMapViewport.addEventListener('touchend', e => this.mouseUpEvent(e));
+    this.__divMapViewport.addEventListener('touchcancel', e => this.mouseOutEvent(e));
+  }
+
+  addMouseEvents() {
+    this.__divMapViewport.addEventListener('mousedown', e => this.mouseDownEvent(e));
+    this.__divMapViewport.addEventListener('mouseup', e => this.mouseUpEvent(e));
+    this.__divMapViewport.addEventListener('mousemove', e => this.mouseMoveEvent(e));
+    this.__divMapViewport.addEventListener('mouseout', e => this.mouseOutEvent(e));
+  }
+
+
+
+  get width(){
+    return this.w;
+  }
+
+  set width(w){
+    this.w = w;
+  }
+
+  get height(){
+    return this.h;
+  }
+
+  set height(h){
+    this.h = h;
+  }
 
   // helper method for capturing size of viewport and dispatching a custom event for other UI components to react to the viewport resizing.
+  // TODO: this method adds no value, and the synthetic event can not be sent to the children of this element (map), it can only bubble
+  // upwards.  
   viewportDimensions(){
-
-    //TODO: Document why a synthetic resize viewport event is triggered here.  
+    try {
     
-    this.width = this.viewportDiv.clientWidth;
-    this.height = this.viewportDiv.clientHeight;
-
-    this.viewportDiv.dispatchEvent(new CustomEvent('gameViewportResize', { detail : {width:this.width, height:this.height }}));
-
+    this.width = this.__divMapViewport.clientWidth;
+    this.height = this.__divMapViewport.clientHeight;
 
     this.showDebugInfo();
+  } catch (err){
+    console.error(`caught error: ${err}`);
+  }
+    
   }
 
   showDebugInfo(){
@@ -124,16 +164,15 @@ class GameMapViewport{
     else document.getElementById('mapLoading').style.visibility = 'hidden';
   }
 
-  /*-------------------------------------------------------------------------------------
-  mouseDownEvent(e)
-    registered method for the mouse down event with the viewport. Does the following:
-    1. capture current mouse coordinates (to be used for calculating drag)
-    2. turn drag ON.
-
-  -------------------------------------------------------------------------------------*/
+/**
+ * touchstart/mousedown capture.
+ * 
+ * @param e 
+ */
   mouseDownEvent(e) {
-    console.info(`detected ${e.type} event`);
     e = e || window.event; 
+
+    console.info(`detected ${e.type} event`);
     
     if (this.util.nNS){ 
       e.preventDefault(); // help stop drag of images off map.
@@ -142,7 +181,7 @@ class GameMapViewport{
     if(e.type == 'mousedown' && !this.util.isLeftButton(e)) return false;
   
     
-    this.oldXY = this.util.mouseXYCoord(e);
+    this.oldXY = this.util.getClientWindowXY(e);
     this.isDragOn = true;
   }  
 
@@ -151,13 +190,17 @@ class GameMapViewport{
   mouseUpEvent(e) {
     console.info(`detected ${e.type} event`);
     this.isDragOn = false;
+    this.gameMap.stopMovement();
   }
 
   /*-------------------------------------------------------------------------------------
   -------------------------------------------------------------------------------------*/
   mouseOutEvent(e) {
-    console.info(`detected ${e.type} event`);
-    this.isDragOn = false;
+    console.info(`detected ${e.type} event on ${e.target.id}`);
+    if (e.target.id == 'mapViewport'){
+      this.isDragOn = false;
+      this.gameMap.stopMovement();
+    }
   }
 
   
@@ -174,10 +217,16 @@ class GameMapViewport{
       e.preventDefault(); // help stop drag of images off map.
     }
     
-    this.dragXY = this.util.mouseXYCoord(e);
-    this.offsetXY = {x:this.dragXY.x - this.oldXY.x, y:this.dragXY.y - this.oldXY.y};
-    this.mapObject.moveMap(this.oldXY, this.dragXY);
-    this.oldXY = this.util.mouseXYCoord(e);
+    this.dragXY = this.util.getClientWindowXY(e);
+    this.mV = {x:this.dragXY.x - this.oldXY.x, y:this.dragXY.y - this.oldXY.y};
+
+    console.info(`movement vector: (${this.mV.x},${this.mV.y}). `);
+
+    this.gameMap.applyMovementVector(this.mV);
+
+   // this.gameMap.moveMap(this.oldXY, this.dragXY);
+
+    this.oldXY = this.dragXY;
   }
 
 
@@ -195,10 +244,12 @@ class GameMapViewport{
     let tile = e.target;
     let tileid = tile.id;
     console.info(`loadMap function tile id: ${tileid}`);
-    let x = tileid.substring(1, tileid.indexOf(','));
-    let y = tileid.substring((1 + tileid.indexOf(',')),tileid.indexOf(']'));
-    this.mapObject.updateMap(x,y);
+    let c = {x:tileid.substring(1, tileid.indexOf(',')), y : tileid.substring((1 + tileid.indexOf(',')),tileid.indexOf(']'))};
+    this.gameMap.updateMap(c);
   }
   
 
 }
+
+
+export {GameMapViewport};

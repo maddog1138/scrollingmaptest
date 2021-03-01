@@ -17,55 +17,86 @@
 
 ############################################################################*/
 
+import { HexTray } from "./hextray.mjs";
+
+const seaTray = '#seaTray';
 
 
 /*
   MapObject.js - this component contains the code needed to manage a map widget in the browser.
                - this component lives within the Viewport container.
                - component keeps track of the smaller tiles that make up the larger map.
-
-500 x 10 x 5 = 5000 x 5 = 25000
-
-
-methods needed: 
-(1) load map tiles
-(2) unload map tiles
-(3) calculate what are the visible tiles in the given viewport.
-
-
-
-
+==========================================================
 */
+
+/**
+ * GameMap object.  
+ * 
+ * During initial setup, the object needs to initialize the following key compoents:
+ * (1) Background tray that displays the visual hexagon map.  The tray needs to have the following properties/capabilties:
+ *   (a) The background tray must be at least 3 x the size of the viewport.  this is to allow for the user to scroll the entire 
+ *       length of the viewport without loosing the hex background. 
+ *   (b) The background tray needs to react to user movement in realtime.
+ *   (c) Upon stop of movement by user, the background tray needs to re-position iself to once again be centred on the viewport.  
+ *       The repositioning needs to be aligned to current hex placement (should be smooth and invisible to user)
+ * 
+ * (2) World tiles are loaded to a tile tray represent each 1x1 degree of the world map. 
+ *   (a) Visible world tiles are calculated based on viewport dimensions, tile resolution, and current focused world coordinate. 
+ *   (b) Visible world tiles are anchored to an absolute coordinate within the tile tray
+ *   (c) The tile tray needs to react to user movement in realtime. 
+ */
+
+
+
 
 class GameMap {
 
-  constructor(initx, inity){
+  /*
+  constructor
+  - calculate the size of the map component based on viewport size. 
+  - register the object to listen to viewport resize events.  
+  */
+  constructor(initialCoord){
     console.info(`GameMap constructor start`);
 
     try {
+      this._viewport = document.querySelector('#mapViewport');
+      //this.coorinateSystem = new MapCoordinateSystem();
 
-      this.RESOLUTION = 500; // resolution in pixels for each map tile
+
+      console.info(`viewport dimensions are (width:${this._viewport.clientWidth}, height:${this._viewport.clientHeight})`);
+
+
+
+      // TODO: the following constants will need to be re-visited.  Probably better to externalize this data
+      // into a configuration object.  
       this.X_RESOLUTION = 500; // resolution in pixels for each map tile
       this.Y_RESOLUTION = 433; // resolution in pixels for each map tile
       this.X_Dimension = 360; // how many tiles wide is the map
       this.Y_Dimension = 180; // how many tiles tall is the map
     
-      this.MAX_MAP_SIZE_X = this.X_RESOLUTION * this.X_Dimension;  // 500 px per sea 
-      this.MAX_MAP_SIZE_Y = this.Y_RESOLUTION * this.Y_Dimension;  // 500 px per sea
+      this.MAX_MAP_SIZE_X = this.X_RESOLUTION * this.X_Dimension;  
+      this.MAX_MAP_SIZE_Y = this.Y_RESOLUTION * this.Y_Dimension;  
+
+      this.hexTray = new HexTray({width:this._viewport.clientWidth, height:this._viewport.clientHeight});
+
 
       // TODO: need to figure out the correct sequence of where this belongs.
-      this.map_div = document.querySelector('#visiblemap');      
+      this._gameMapDiv = document.querySelector(seaTray);      
 
-      this.map_div.addEventListener('gameViewportResize', e => { console.log(`Resize event reports viewport is now (${e.detail.width},${e.detail.height})`), true});
+      console.info(`we have a reference to seaTray`);
 
+
+//      this.map_div.addEventListener('gameViewportResize', e => { console.log(`Resize event reports viewport is now (${e.detail.width},${e.detail.height})`), true});
+
+//     console.info(`from within map: viewport width ${viewportObj.width}`);
 
 
       this.MAP = new Array(this.X_Dimension);
       var TILES = new Array();      
 
-      this.coorinateSystem = new MapCoordinateSystem();
     
-      this.ajax = new IsiegeAjax();
+      //this.ajax = new IsiegeAjax();
     
       // TODO: investigate why this loop initializes the whole array to zero.
       for (let x = 0; x < this.X_Dimension; x++) 
@@ -81,14 +112,27 @@ class GameMap {
       //
       // TODO: map needs to have a method to figure out what are the visible tiles.  
 
-      this.updateMap (initx, inity); 
-      this.setVisibleMapX(initx, inity);
+      this.updateMap (initialCoord); 
+      this.setVisibleMapX(initialCoord);
 
       console.info(`GameMap constructor end successfully`);
     } catch (err){
       console.error(`GameMap constructor caught error: ${err}`);
     } finally {
     }   
+
+  }
+
+
+  stopMovement(){
+    this.hexTray.recalibrate();
+  }
+
+
+  applyMovementVector(vector){
+
+    this.hexTray.moveByVector(vector);
+
 
   }
 
@@ -103,6 +147,7 @@ class GameMap {
   */
 
   processMapData() {
+/*    
     var httpRequest = me.ajax.getXmlHttp();
     if (httpRequest.readyState == 4) {
       if (httpRequest.status == 200) {
@@ -137,14 +182,15 @@ class GameMap {
       }
       me.viewport.splashLoading(0);     
     }
+    */
   }  
 
 
   moveMap(oldXY, dragXY){
     console.debug(`attempting to move map coord to (${oldXY.x},${oldXY.y})`);    
 
-    let ox = parseInt(document.getElementById('visiblemap').style.left);
-    let oy = parseInt(document.getElementById('visiblemap').style.top);
+    let ox = parseInt(document.getElementById('seaTray').style.left);
+    let oy = parseInt(document.getElementById('seaTray').style.top);
 
     let newx = -(ox + dragXY.x - oldXY.x);
     let newy = -(oy + dragXY.y - oldXY.y);
@@ -156,23 +202,25 @@ class GameMap {
   /**
   
   */
-  setVisibleMap(newx, newy) {
-    if (newx < 0) newx = 0;
-    if (newy < 0) newy = 0;
-    if (newx > (this.MAX_MAP_SIZE_X - this.X_RESOLUTION)) newx = this.MAX_MAP_SIZE_X - this.X_RESOLUTION;
-    if (newy > (this.MAX_MAP_SIZE_Y - this.Y_RESOLUTION)) newy = this.MAX_MAP_SIZE_Y - this.Y_RESOLUTION;
+  setVisibleMap(c) {
+    console.debug(`setVisibleMap, input is: (${c.x},${c.y})`);
 
-    console.debug(`attempting to set map coord to (${newx},${newy})`);
+    if (c.x < 0) c.x = 0;
+    if (c.y < 0) c.y = 0;
+    if (c.y > (this.MAX_MAP_SIZE_X - this.X_RESOLUTION)) newx = this.MAX_MAP_SIZE_X - this.X_RESOLUTION;
+    if (c.y > (this.MAX_MAP_SIZE_Y - this.Y_RESOLUTION)) newy = this.MAX_MAP_SIZE_Y - this.Y_RESOLUTION;
 
-    document.getElementById('visiblemap').style.left = -(newx)+"px";
-    document.getElementById('visiblemap').style.top  = -(newy)+"px";
+    console.debug(`attempting to set map coord to (${c.x},${c.y})`);
+
+    document.getElementById('seaTray').style.left = -(c.x)+"px";
+    document.getElementById('seaTray').style.top  = -(c.y)+"px";
   }
 
   
-  setVisibleMapX(newx, newy) {
-    newx = newx * this.X_RESOLUTION;
-    newy = newy * this.Y_RESOLUTION;
-    this.setVisibleMap(newx, newy) 
+  setVisibleMapX(c) {
+    c.x = c.x * this.X_RESOLUTION;
+    c.y = c.y * this.Y_RESOLUTION;
+    this.setVisibleMap(c) 
   }
   
   
@@ -180,7 +228,7 @@ class GameMap {
   updateMap - this function will request map data from server.  
   the input mapx, mapy values correspond to the x,y coordinates of the sea to centre the view on.
   */
-  updateMap(mapx, mapy){
+  updateMap(c){
     
   // load up the tiles we're centering on.
   // init function input is the (x,y) coordinate of the sea we're to centre on.
@@ -189,20 +237,20 @@ class GameMap {
     let cssClass = 'maplayer';
     
     
-    mapx = mapx -1;
-    mapy = mapy -1;
-    if (mapx < 0) mapx = 0;
-    if (mapy < 0) mapy = 0;
+    c.x = c.x -1;
+    c.y = c.y -1;
+    if (c.x < 0) c.x = 0;
+    if (c.y < 0) c.y = 0;
     var serverRequest = "";
     var request = 1;
   
   // test if the tiles need to be loaded.
     for (let x=0; x<3; x++)
     {
-      var testx = mapx+x;
+      var testx = c.x+x;
       for(let y=0; y<3; y++)
       {
-        var testy = mapy+y;
+        var testy = c.y+y;
         
 //        alert("loading map ["+testx + ","+testy+"] (" + this.MAP[testx][testy] + ")");
         
@@ -216,10 +264,10 @@ class GameMap {
 //          alert("initialized map ["+testx + ","+testy+"] (" + this.MAP[testx][testy] + ")");
           
           var mapGridId = "["+ testx + "," + testy + "]";
-          var mapGrid = "<div id='"+ mapGridId+"' class='"+cssClass+"' onmousedown='viewportObj.loadMap(event);' >["+testx*10+","+testy*10+"]</div> ";
+          var mapGrid = "<div id='"+ mapGridId+"' class='"+cssClass+"'>["+testx*10+","+testy*10+"]</div> ";
           
 
-          document.getElementById('visiblemap').innerHTML += mapGrid;
+          document.getElementById('seaTray').innerHTML += mapGrid;
 
           document.getElementById(mapGridId).style.left = testx*this.X_RESOLUTION + 'px';
           document.getElementById(mapGridId).style.top = testy*this.Y_RESOLUTION + 'px';
@@ -245,4 +293,8 @@ class GameMap {
   }  
 
 }
+
+  
+
+export {GameMap};
 
