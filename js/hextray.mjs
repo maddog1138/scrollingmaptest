@@ -54,7 +54,6 @@ class HexTray {
     }
 
     traySize(viewportSize){
-      this.__hexTray.setAttribute('height', viewportSize.height * 3);
       this.__hexTray.style.width = viewportSize.width * 3 + 'px';
       this.__hexTray.style.height = viewportSize.height * 3 + 'px';
     }
@@ -70,7 +69,6 @@ class HexTray {
 
       // 3. if hexes > 0, move the hex tile by that amount.  
 
-
       if (Math.abs(yHexOffset) >= 1) {
         this.__hexTray.style.top = Math.round(this.__hexTray.offsetTop - (HEX_S+HEX_H)*yHexOffset) + 'px';
       }
@@ -80,7 +78,7 @@ class HexTray {
         if (isEven(yHexOffset)) {
           this.__hexTray.style.left = Math.round(this.__hexTray.offsetLeft - (HEX_WIDTH*xHexOffset)) + 'px';
         } else {
-          this.__hexTray.style.left = Math.round(this.__hexTray.offsetLeft - (HEX_WIDTH*xHexOffset)) + HEX_R + 'px';
+          this.__hexTray.style.left = Math.round(this.__hexTray.offsetLeft - (HEX_WIDTH*xHexOffset) + HEX_R) + 'px';
         }
       }
 

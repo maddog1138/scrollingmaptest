@@ -2,9 +2,10 @@
 
 Viewport object. 
 
-The intent of the viewport object is to become a window into the game world. The Viewport 
-object is mapped directly to a DOM object which becomes its host container.  
-The Viewport has the following properties:
+The Viewport object is the 'window' into the game world. Through the Viewport the user can see and
+interact with the world map. The Viewport intercepts all of the user interactions with the map object. 
+
+- reference to DOM viewport component
 - size in pixels on the device, inherited from the containing DOM object.
 - the Viewport can react to containing DOM object resizing. 
 - the Viewport intercepts mouse and touch events and translates them to game events.
@@ -69,11 +70,7 @@ class GameMapViewport{
       //const viewportDiv = document.querySelector('#map_viewport');
       this.viewportDimensions();
   
-      console.info(`viewport width. ${this.width}, ${this.height}`);
-
-      
-    
-  
+ 
 
       this.addMouseEvents();
 
@@ -141,6 +138,8 @@ class GameMapViewport{
     
     this.width = this.__divMapViewport.clientWidth;
     this.height = this.__divMapViewport.clientHeight;
+    console.info(`viewport dimensions:(${this.width}, ${this.height}).`);
+
 
     this.showDebugInfo();
   } catch (err){

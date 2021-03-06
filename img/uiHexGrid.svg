@@ -24,16 +24,17 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="3840"
-     inkscape:window-height="2111"
+     inkscape:window-height="2047"
      id="namedview12"
      showgrid="false"
      inkscape:zoom="5.5"
-     inkscape:cx="37.5"
-     inkscape:cy="65"
-     inkscape:window-x="3840"
+     inkscape:cx="166.75187"
+     inkscape:cy="94.375348"
+     inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg10" />
+     inkscape:current-layer="svg10"
+     inkscape:document-rotation="0" />
   <metadata
      id="metadata2">
     <rdf:RDF>
@@ -52,4 +53,22 @@
      stroke-dasharray="1, 2"
      id="path4"
      style="fill:none;stroke:#000000;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dashoffset:0" />
+  <path
+     sodipodi:type="star"
+     style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.405667;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0.405667,4.86800394;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+     id="path838"
+     sodipodi:sides="6"
+     sodipodi:cx="154.83194"
+     sodipodi:cy="-5.4360905"
+     sodipodi:r1="29.481373"
+     sodipodi:r2="27.342899"
+     sodipodi:arg1="0.52338222"
+     sodipodi:arg2="1.046981"
+     inkscape:flatsided="true"
+     inkscape:rounded="0"
+     inkscape:randomized="0"
+     d="M 180.36675,9.2990666 154.83832,24.045282 129.30351,9.3101246 l -0.006,-29.4813726 25.52843,-14.746215 25.5348,14.735157 z"
+     inkscape:transform-center-x="0.68248994"
+     inkscape:transform-center-y="-0.27673851"
+     transform="matrix(1.6799295,0,0,1.6076337,-85.681578,21.09313)" />
 </svg>
